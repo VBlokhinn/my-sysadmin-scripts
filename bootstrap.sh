@@ -77,7 +77,7 @@ EOF
 
 sudo ln -sf /etc/nginx/sites-available/my-app /etc/nginx/sites-enabled/
 sudo nginx -t
-sudo systemctl reload nginx
+sudo systemctl restart nginx
 
 echo "=== 5. Настройка и запуск systemd-службы ==="
 docker stop my-app
