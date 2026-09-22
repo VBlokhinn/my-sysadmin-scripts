@@ -15,6 +15,12 @@ echo "=== 3. Настройка хранилища (RAID 1 и LVM на loop-ус
 sudo mkdir -p /mnt/raid-lab
 cd /mnt/raid-lab
 
+# Очищаем старые точки и loop-устройства (на случай повторного запуска)
+sudo umount /mnt/raid 2>/dev/null || true
+sudo umount /mnt/logs 2>/dev/null || true
+sudo mdadm --stop /dev/md0 2>/dev/null || true
+sudo losetup -D 2>/dev/null || true
+
 # Создаем файлы-диски по 512 МБ
 sudo dd if=/dev/zero of=disk1.img bs=1M count=512 status=none
 sudo dd if=/dev/zero of=disk2.img bs=1M count=512 status=none
@@ -26,15 +32,15 @@ LOOP2=$(sudo losetup -fP --show disk2.img)
 LOOP3=$(sudo losetup -fP --show disk3.img)
 
 # Создаем RAID 1
-yes | sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 "$LOOP1" "$LOOP2"
+echo y | sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 "$LOOP1" "$LOOP2"
 sudo mkfs.ext4 -F /dev/md0
 sudo mkdir -p /mnt/raid
 sudo mount /dev/md0 /mnt/raid
 
 # Создаем LVM
-yes | sudo pvcreate "$LOOP3"
+echo y | sudo pvcreate "$LOOP3"
 sudo vgcreate vg_data "$LOOP3"
-yes | sudo lvcreate -L 200M -n lv_logs vg_data
+echo y | sudo lvcreate -L 200M -n lv_logs vg_data
 sudo mkfs.ext4 -F /dev/vg_data/lv_logs
 sudo mkdir -p /mnt/logs
 sudo mount /dev/vg_data/lv_logs /mnt/logs
