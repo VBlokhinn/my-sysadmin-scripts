@@ -18,7 +18,10 @@ cd /mnt/raid-lab
 # Очищаем старые точки и loop-устройства (на случай повторного запуска)
 sudo umount /mnt/raid 2>/dev/null || true
 sudo umount /mnt/logs 2>/dev/null || true
+sudo vgchange -an vg_data 2>/dev/null || true
 sudo vgremove -y -f vg_data 2>/dev/null || true
+sudo dmsetup remove -f vg_data-lv_logs 2>/dev/null || true
+sudo rm -rf /dev/vg_data /dev/mapper/vg_data* 2>/dev/null || true
 sudo mdadm --stop /dev/md0 2>/dev/null || true
 sudo losetup -D 2>/dev/null || true
 
