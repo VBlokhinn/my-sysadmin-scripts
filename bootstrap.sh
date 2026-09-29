@@ -63,11 +63,11 @@ sudo tee /etc/nginx/sites-available/my-app > /dev/null << 'EOF'
 server {
     listen 80;
     server_name _;
-    return 301 https://$host$request_uri;
+    return 301 https://$host:8443$request_uri;
 }
 
 server {
-    listen 443 ssl;
+    listen 8443 ssl;
     server_name _;
 
     ssl_certificate     /etc/ssl/certs/my-app.crt;
@@ -108,6 +108,6 @@ sudo systemctl start my-app
 sleep 3
 
 echo "=== 6. Проверка доступности сервиса по HTTPS ==="
-curl -kI https://127.0.0.1
+curl -kI https://127.0.0.1:8443
 
 echo "Развертывание капстоуна успешно завершено!"
